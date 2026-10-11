@@ -16,13 +16,32 @@
     <!-- CONTEÚDO CENTRALIZADO -->
     <main class="conteudo-central">
 
-        <!-- ETAPA 0: SELEÇÃO DE TURNO -->
-        <div id="tela-turno" class="card-tela">
-            <h2>Seleção de Turno</h2>
-            <p class="instrucao-config">Escolha em qual turno a eleição será realizada:</p>
-            <div class="botoes-turno-container">
-                <button type="button" id="btn-primeiro-turno" class="btn-turno">1º Turno (Livre)</button>
-                <button type="button" id="btn-segundo-turno" class="btn-turno">2º Turno (Apenas 2 Candidatos)</button>
+        <!-- ETAPA PRELIMINAR: SELEÇÃO DO TIPO DE URNA -->
+        <div id="tela-tipo-urna" class="card-tela">
+            <h2>Tipo de Estação</h2>
+            <p id="instrucao-tipo-urna" class="instrucao-config">Selecione o papel desta máquina na eleição:</p>
+            
+            <div id="container-botoes-tipo-urna" class="botoes-turno-container">
+                <button type="button" id="btn-urna-padrao" class="btn-turno">Urna Padrão (Seccional)</button>
+                <button type="button" id="btn-urna-mestra" class="btn-turno btn-mestra">Urna Mestra (Consolidadora)</button>
+            </div>
+
+            <!-- CONFIGURAÇÃO ESPECÍFICA DA URNA PADRÃO -->
+            <div id="box-config-urna-padrao" class="box-subconfig tela-oculta">
+                <div class="campo-form">
+                    <label for="cfg-numero-urna">Identificação desta Urna (Número):</label>
+                    <input type="number" id="cfg-numero-urna" placeholder="Ex: 1" min="1" value="1">
+                </div>
+                <button type="button" id="btn-confirmar-padrao" class="btn-primario">Avançar para Segurança</button>
+            </div>
+
+            <!-- CONFIGURAÇÃO ESPECÍFICA DA URNA MESTRA -->
+            <div id="box-config-urna-mestra" class="box-subconfig tela-oculta">
+                <div class="campo-form">
+                    <label for="cfg-qtd-urnas-auxiliares">Quantidade de Urnas Padrão Auxiliares:</label>
+                    <input type="number" id="cfg-qtd-urnas-auxiliares" placeholder="Ex: 4" min="1" value="4">
+                </div>
+                <button type="button" id="btn-confirmar-mestra" class="btn-primario">Avançar para Segurança</button>
             </div>
         </div>
 
@@ -59,7 +78,7 @@
         <!-- ETAPA 1: CADASTRO DE CANDIDATOS -->
         <div id="tela-cadastro" class="card-tela tela-oculta">
             <h2 id="titulo-cadastro">Cadastro de Candidatos</h2>
-            <p id="sub-titulo-cadastro" class="instrucao-config"></p>
+            <p class="instrucao-config">Cadastre os candidatos para a eleição em turno único:</p>
             <form id="form-cadastro">
                 <div class="campo-form">
                     <label for="cad-numero">Número do Candidato:</label>
@@ -148,9 +167,9 @@
             </div>
         </div>
 
-        <!-- ETAPA 3: TELA DE RESULTADOS / RELATÓRIO FINAL -->
+        <!-- ETAPA 3: TELA DE RESULTADOS / RELATÓRIO FINAL DA URNA -->
         <div id="tela-resultado" class="card-tela-larga tela-oculta">
-            <h2>Relatório Final da Eleição</h2>
+            <h2 id="titulo-relatorio-tipo">Relatório Final da Eleição</h2>
 
             <!-- CARD DE DESTAQUE DO VENCEDOR / ELEITO -->
             <div id="card-vencedor-destaque" class="card-vencedor-destaque tela-oculta">
@@ -159,22 +178,6 @@
                 <div class="container-foto-vencedor">
                     <img id="foto-vencedor-destaque" src="" alt="Foto do Vencedor" class="foto-destaque">
                 </div>
-            </div>
-
-            <!-- CARD DE DESTAQUE DOS CLASSIFICADOS PARA O 2º TURNO -->
-            <div id="alerta-segundo-turno" class="alerta-segundo-turno tela-oculta">
-                <h3>ELEIÇÃO NÃO DEFINIDA EM 1º TURNO!</h3>
-                <p>Nenhum candidato alcançou a maioria absoluta (50% + 1 dos votos válidos).</p>
-                <p class="subtitulo-segundo-turno">Candidatos classificados para o 2º Turno:</p>
-                
-                <!-- CONTAINER LADO A LADO DAS FOTOS DOS CLASSIFICADOS -->
-                <div id="container-classificados-segundo-turno" class="container-classificados-segundo-turno">
-                    <!-- Gerado dinamicamente via JS -->
-                </div>
-
-                <button id="btn-ir-segundo-turno" class="btn-segundo-turno-acao">
-                    Avançar para o 2º Turno
-                </button>
             </div>
 
             <div id="ranking-candidatos">
@@ -186,15 +189,35 @@
             </div>
 
             <div class="votos-gerais">
-                <p>Votos Válidos: <span id="total-validos">0</span></p>
-                <p>Votos em Branco: <span id="total-branco">0</span></p>
-                <p>Votos Nulos: <span id="total-nulos">0</span></p>
-                <p>Total Geral de Votos: <span id="total-geral" class="total-geral-destaque">0</span></p>
+                <p id="linha-validos">Votos Válidos: <span id="total-validos">0</span></p>
+                <p id="linha-brancos">Votos em Branco: <span id="total-branco">0</span></p>
+                <p id="linha-nulos">Votos Nulos: <span id="total-nulos">0</span></p>
+                <p id="linha-geral">Total Geral de Votos: <span id="total-geral" class="total-geral-destaque">0</span></p>
+            </div>
+
+            <!-- BOTÃO EXCLUSIVO DA URNA MESTRA PARA IR À APURAÇÃO CONSOLIDADA -->
+            <div id="container-btn-apuracao-mestra" class="tela-oculta container-mestra-acao">
+                <button id="btn-ir-apuracao-mestra" class="btn-mestra-destaque">Apuração Geral das Urnas</button>
             </div>
 
             <div class="botoes-resultado-container">
                 <button id="btn-pdf" class="btn-secundario">Salvar em PDF</button>
                 <button id="btn-reiniciar" class="btn-sucesso">Nova Eleição</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 4: TELA DE APURAÇÃO GERAL DA URNA MESTRA -->
+        <div id="tela-consolidação-mestra" class="card-tela-larga tela-oculta">
+            <h2>Consolidação Geral de Votos</h2>
+            <p class="instrucao-config">Insira os boletins das urnas seccionais para calcular o resultado geral:</p>
+
+            <div id="container-entradas-urnas-padrao">
+                <!-- Inputs das urnas dinamicamente gerados -->
+            </div>
+
+            <div class="botoes-resultado-container">
+                <button id="btn-calcular-resultado-geral" class="btn-sucesso">Calcular Resultado Geral Consolidado</button>
+                <button id="btn-voltar-relatorio-mestra" class="btn-secundario">Voltar</button>
             </div>
         </div>
 
