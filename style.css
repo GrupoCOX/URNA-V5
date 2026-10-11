@@ -113,6 +113,71 @@ h2, h3 {
 }
 
 /* ==========================================
+   CONFIGURAÇÃO DE TIPO DE URNA
+   ========================================== */
+.btn-mestra {
+    background-color: #8e44ad !important;
+}
+.btn-mestra:hover {
+    background-color: #7d3c98 !important;
+}
+
+.box-subconfig {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.container-mestra-acao {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.btn-mestra-destaque {
+    background-color: #8e44ad;
+    color: white;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3);
+}
+
+.btn-mestra-destaque:hover {
+    background-color: #7d3c98;
+}
+
+/* CARDS DE CONSOLIDAÇÃO DE URNAS */
+.card-urna-seccional-input {
+    background: #fdfefe;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.card-urna-seccional-input h4 {
+    color: #2980b9;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #ebedef;
+    padding-bottom: 8px;
+}
+
+.grid-inputs-candidatos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* ==========================================
    ESTILOS DA TELA DE CONCLUÍDO (FIM)
    ========================================== */
 .titulo-fim {
@@ -195,8 +260,6 @@ h2, h3 {
 /* ==========================================
    DESTAQUES NO RELATÓRIO FINAL
    ========================================== */
-
-/* DESTAQUE VENCEDOR */
 .card-vencedor-destaque {
     background: #e8f8f5;
     border: 3px solid #27ae60;
@@ -231,95 +294,10 @@ h2, h3 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* DESTAQUE 2º TURNO (LADO A LADO) */
-.alerta-segundo-turno {
-    background-color: #fff3cd;
-    border: 2px solid #ffeeba;
-    padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.alerta-segundo-turno h3 {
-    color: #856404;
-    margin-bottom: 8px;
-}
-
-.alerta-segundo-turno p {
-    color: #856404;
-    font-size: 1.05rem;
-}
-
-.subtitulo-segundo-turno {
-    font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    color: #795548;
-}
-
-.container-classificados-segundo-turno {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 30px;
-    flex-wrap: wrap;
-    margin-bottom: 25px;
-}
-
-.item-classificado-card {
-    background: #ffffff;
-    border: 2px solid #f39c12;
-    border-radius: 10px;
-    padding: 15px;
-    width: 180px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.nome-classificado-card {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #d35400;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    min-height: 2.4em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container-foto-classificado {
-    width: 140px;
-    height: 175px;
-    margin: 0 auto;
-    border: 3px solid #f39c12;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
 .foto-destaque {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.btn-segundo-turno-acao {
-    background-color: #e67e22;
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 1.05rem;
-    transition: background 0.2s;
-    text-transform: uppercase;
-}
-
-.btn-segundo-turno-acao:hover {
-    background-color: #d35400;
 }
 
 /* ==========================================
@@ -382,9 +360,6 @@ h2, h3 {
 }
 
 .btn-turno:hover { background-color: #2980b9; }
-
-#btn-segundo-turno { background-color: #e67e22; }
-#btn-segundo-turno:hover { background-color: #d35400; }
 
 .campo-form {
     margin-bottom: 15px;
@@ -644,7 +619,7 @@ h2, h3 {
         padding: 0 !important;
     }
 
-    #topo-republica, #rodape-tribunal, .botoes-resultado-container {
+    #topo-republica, #rodape-tribunal, .botoes-resultado-container, #container-btn-apuracao-mestra {
         display: none !important; 
     }
 
