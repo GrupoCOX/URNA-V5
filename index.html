@@ -17,7 +17,7 @@
     <main class="conteudo-central">
 
         <!-- ETAPA 0: SELEÇÃO DE TURNO -->
-        <div id="tela-turno">
+        <div id="tela-turno" class="card-tela">
             <h2>Seleção de Turno</h2>
             <p class="instrucao-config">Escolha em qual turno a eleição será realizada:</p>
             <div class="botoes-turno-container">
@@ -26,58 +26,62 @@
             </div>
         </div>
 
-        <!-- ETAPA 0.1: CRIAÇÃO DE SENHA (Nova Tela) -->
-        <div id="tela-senha" style="display: none;">
+        <!-- ETAPA 0.1: CRIAÇÃO DE SENHA -->
+        <div id="tela-senha" class="card-tela tela-oculta">
             <h2>Segurança da Eleição</h2>
-            <p class="instrucao-config">Defina uma senha para encerrar a eleição posteriormente:</p>
+            <p class="instrucao-config">Defina uma senha para intermediar os votos e encerrar a eleição posteriormente:</p>
             <form id="form-senha">
-                <div>
-                    <label for="cfg-senha">Senha de Encerramento:</label>
+                <div class="campo-form">
+                    <label for="cfg-senha">Senha:</label>
                     <input type="password" id="cfg-senha" placeholder="Digite uma senha segura" required>
                 </div>
-                <button type="submit" id="btn-salvar-senha">Avançar</button>
+                <button type="submit" id="btn-salvar-senha" class="btn-primario">Avançar</button>
             </form>
         </div>
 
         <!-- ETAPA 0.2: CONFIGURAÇÃO DO SISTEMA -->
-        <div id="tela-configuracao" style="display: none;">
+        <div id="tela-configuracao" class="card-tela tela-oculta">
             <h2>Configuração da Eleição</h2>
             <p class="instrucao-config">Personalize os dados do seu sistema:</p>
             <form id="form-configuracao">
-                <div>
+                <div class="campo-form">
                     <label for="cfg-topo">Nome da República (Topo da Tela):</label>
                     <input type="text" id="cfg-topo" placeholder="Ex: REPÚBLICA FEDERATIVA DO BERRETA" required>
                 </div>
-                <div>
+                <div class="campo-form">
                     <label for="cfg-rodape">Nome do Tribunal (Rodapé da Tela):</label>
                     <input type="text" id="cfg-rodape" placeholder="Ex: TRIBUNAL ELEITORAL DO BERRETA" required>
                 </div>
-                <button type="submit" id="btn-salvar-config">Salvar e Continuar</button>
+                <button type="submit" id="btn-salvar-config" class="btn-primario">Salvar e Continuar</button>
             </form>
         </div>
 
         <!-- ETAPA 1: CADASTRO DE CANDIDATOS -->
-        <div id="tela-cadastro" style="display: none;">
+        <div id="tela-cadastro" class="card-tela tela-oculta">
             <h2 id="titulo-cadastro">Cadastro de Candidatos</h2>
             <p id="sub-titulo-cadastro" class="instrucao-config"></p>
             <form id="form-cadastro">
-                <div>
+                <div class="campo-form">
                     <label for="cad-numero">Número do Candidato:</label>
                     <input type="number" id="cad-numero" required min="1">
                 </div>
-                <div>
+                <div class="campo-form">
                     <label for="cad-nome">Nome do Candidato:</label>
                     <input type="text" id="cad-nome" required>
                 </div>
-                <button type="submit" id="btn-cadastrar">Cadastrar Candidato</button>
+                <div class="campo-form">
+                    <label for="cad-foto">Foto do Candidato:</label>
+                    <input type="file" id="cad-foto" accept="image/*" required>
+                </div>
+                <button type="submit" id="btn-cadastrar" class="btn-primario">Cadastrar Candidato</button>
             </form>
             <p id="msg-cadastro"></p>
 
-            <button id="btn-iniciar-eleicao">Iniciar Eleição</button>
+            <button id="btn-iniciar-eleicao" class="btn-sucesso">Iniciar Eleição</button>
         </div>
 
         <!-- ETAPA 2: TELA DE VOTAÇÃO -->
-        <div id="tela-votacao" style="display: none;">
+        <div id="tela-votacao" class="card-tela-larga tela-oculta">
             <div class="test">
                 <h2>Urna Eletrônica</h2>
 
@@ -95,7 +99,7 @@
                                 <div id="voto-nome">...</div>
                             </div>
                             <div class="container-foto-candidato">
-                                <img id="voto-foto" src="" alt="Foto do Candidato" style="display: none;">
+                                <img id="voto-foto" src="" alt="Foto do Candidato" class="foto-candidato tela-oculta">
                             </div>
                         </div>
                     </div>
@@ -107,12 +111,15 @@
                     <button id="btn-confirma">CONFIRMA</button>
                 </div>
 
-                <!-- MODAL / CONTAINER PARA VALIDAÇÃO DE SENHA AO ENCERRAR -->
-                <div id="box-autenticacao-encerrar" style="display: none; margin-top: 20px; background: #fff3cd; border: 2px solid #ffeeba; padding: 15px; border-radius: 8px;">
-                    <p style="color: #856404; font-weight: bold; margin-bottom: 8px;">Digite a senha cadastrada para encerrar:</p>
-                    <input type="password" id="senha-confirmacao" placeholder="Senha de encerramento" style="padding: 8px; width: 200px; border: 1px solid #ccc; border-radius: 4px;">
-                    <button id="btn-validar-encerramento" style="background-color: #c0392b; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 5px;">Confirmar Encerramento</button>
-                    <button id="btn-cancelar-encerramento" style="background-color: #7f8c8d; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 5px;">Cancelar</button>
+                <!-- MODAL PARA VALIDAÇÃO DE SENHA AO ENCERRAR -->
+                <div id="box-autenticacao-encerrar" class="box-autenticacao tela-oculta">
+                    <p>Digite a senha cadastrada para encerrar:</p>
+
+                    <div class="box-autenticacao-controles">
+                        <input type="password" id="senha-confirmacao" placeholder="Senha de encerramento">
+                        <button id="btn-validar-encerramento" class="btn-modal-confirmar">Confirmar Encerramento</button>
+                        <button id="btn-cancelar-encerramento" class="btn-modal-cancelar">Cancelar</button>
+                    </div>
                 </div>
 
                 <div class="area-adm-encerrar">
@@ -122,29 +129,56 @@
         </div>
 
         <!-- ETAPA DE VOTO CONCLUÍDO (FIM) -->
-        <div id="tela-concluido" style="display: none; text-align: center;">
+        <div id="tela-concluido" class="card-tela tela-oculta text-center">
             <div class="caixa-concluido">
-                <h2 style="font-size: 3rem; color: green; margin-bottom: 20px;">FIM</h2>
-                <p style="font-size: 1.5rem; margin-bottom: 30px;">Voto computado com sucesso!</p>
-                <button id="btn-proximo-eleitor">Próximo Eleitor</button>
+                <h2 class="titulo-fim">FIM</h2>
+                <p class="texto-fim">Voto computado com sucesso!</p>
+
+                <!-- MODAL DE SEGURANÇA PARA PRÓXIMO ELEITOR -->
+                <div id="box-autenticacao-proximo" class="box-autenticacao tela-oculta">
+                    <p>Digite a senha cadastrada para liberar o próximo voto:</p>
+                    <div class="box-autenticacao-controles">
+                        <input type="password" id="senha-confirmacao-proximo" placeholder="Senha de segurança">
+                        <button id="btn-validar-proximo" class="btn-modal-confirmar">Confirmar</button>
+                        <button id="btn-cancelar-proximo" class="btn-modal-cancelar">Cancelar</button>
+                    </div>
+                </div>
+
+                <button id="btn-proximo-eleitor" class="btn-primario">Próximo Eleitor</button>
             </div>
         </div>
 
         <!-- ETAPA 3: TELA DE RESULTADOS / RELATÓRIO FINAL -->
-        <div id="tela-resultado" style="display: none;">
+        <div id="tela-resultado" class="card-tela-larga tela-oculta">
             <h2>Relatório Final da Eleição</h2>
 
-            <!-- ALERTA DE 2º TURNO -->
-            <div id="alerta-segundo-turno" style="display: none; background-color: #fff3cd; border: 2px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                <h3 style="color: #856404; margin-bottom: 10px;">ELEIÇÃO NÃO DEFINIDA EM 1º TURNO!</h3>
-                <p style="color: #856404; font-size: 1.1rem; margin-bottom: 15px;">Nenhum candidato alcançou a maioria absoluta (50% + 1 dos votos válidos).</p>
-                <button id="btn-ir-segundo-turno" style="background-color: #e67e22; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;">
-                    Avançar para o 2º Turno (Com os 2 Mais Votados)
+            <!-- CARD DE DESTAQUE DO VENCEDOR / ELEITO -->
+            <div id="card-vencedor-destaque" class="card-vencedor-destaque tela-oculta">
+                <h3 class="titulo-vencedor-destaque">CANDIDATO ELEITO</h3>
+                <p id="nome-vencedor-destaque" class="nome-vencedor-destaque"></p>
+                <div class="container-foto-vencedor">
+                    <img id="foto-vencedor-destaque" src="" alt="Foto do Vencedor" class="foto-destaque">
+                </div>
+            </div>
+
+            <!-- CARD DE DESTAQUE DOS CLASSIFICADOS PARA O 2º TURNO -->
+            <div id="alerta-segundo-turno" class="alerta-segundo-turno tela-oculta">
+                <h3>ELEIÇÃO NÃO DEFINIDA EM 1º TURNO!</h3>
+                <p>Nenhum candidato alcançou a maioria absoluta (50% + 1 dos votos válidos).</p>
+                <p class="subtitulo-segundo-turno">Candidatos classificados para o 2º Turno:</p>
+                
+                <!-- CONTAINER LADO A LADO DAS FOTOS DOS CLASSIFICADOS -->
+                <div id="container-classificados-segundo-turno" class="container-classificados-segundo-turno">
+                    <!-- Gerado dinamicamente via JS -->
+                </div>
+
+                <button id="btn-ir-segundo-turno" class="btn-segundo-turno-acao">
+                    Avançar para o 2º Turno
                 </button>
             </div>
 
             <div id="ranking-candidatos">
-                <table style="width: 100%; border-collapse: collapse;">
+                <table class="tabela-ranking">
                     <tbody id="corpo-ranking">
                         <!-- Lista gerada por JS -->
                     </tbody>
@@ -152,15 +186,15 @@
             </div>
 
             <div class="votos-gerais">
-                <p>Votos Válidos: <span id="total-validos" style="color: #27ae60; font-weight: bold;">0</span></p>
+                <p>Votos Válidos: <span id="total-validos">0</span></p>
                 <p>Votos em Branco: <span id="total-branco">0</span></p>
                 <p>Votos Nulos: <span id="total-nulos">0</span></p>
-                <p>Total Geral de Votos: <span id="total-geral">0</span></p>
+                <p>Total Geral de Votos: <span id="total-geral" class="total-geral-destaque">0</span></p>
             </div>
 
             <div class="botoes-resultado-container">
-                <button id="btn-pdf">Salvar em PDF</button>
-                <button id="btn-reiniciar">Nova Eleição</button>
+                <button id="btn-pdf" class="btn-secundario">Salvar em PDF</button>
+                <button id="btn-reiniciar" class="btn-sucesso">Nova Eleição</button>
             </div>
         </div>
 
@@ -168,7 +202,7 @@
 
     <!-- RODAPÉ PERSONALIZÁVEL -->
     <footer id="rodape-tribunal">
-        <p id="texto-rodape">TRIBUNAL SUPERIOR</p>
+        <p id="texto-rodape">TRIBUNAL SUPERIOR ELEITORAL</p>
     </footer>
 
     <script src="script.js"></script>
