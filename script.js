@@ -1,24 +1,35 @@
 // ==============================================================================
-// URNA ELETRÔNICA - SCRIPT COMPLETO DE FUNCIONAMENTO E APURAÇÃO
+// URNA ELETRÔNICA - SCRIPT COMPLETO DE FUNCIONAMENTO E APURAÇÃO (TURNO ÚNICO)
 // ==============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // BASE DE DADOS E CONTADORES
-    let turnoSelecionado = 1; 
+    // BASE DE DADOS E CONFIGURAÇÕES
+    let tipoUrna = 'padrao'; // 'padrao' ou 'mestra'
+    let numeroUrnaPadrao = 1;
+    let qtdUrnasAuxiliares = 4;
+
     let senhaEncerramento = ""; 
     let candidatos = {}; 
     let votosCandidatos = {}; 
     let votosBrancos = 0;
     let votosNulos = 0;
     let totalGeralVotos = 0;
-    let candidatosSegundoTurno = []; 
 
-    // ELEMENTOS DAS TELAS INICIAIS
-    const telaTurno = document.getElementById('tela-turno');
-    const btnPrimeiroTurno = document.getElementById('btn-primeiro-turno');
-    const btnSegundoTurno = document.getElementById('btn-segundo-turno');
+    // ELEMENTOS DE SELEÇÃO DO TIPO DE URNA
+    const telaTipoUrna = document.getElementById('tela-tipo-urna');
+    const instrucaoTipoUrna = document.getElementById('instrucao-tipo-urna');
+    const containerBotoesTipoUrna = document.getElementById('container-botoes-tipo-urna');
+    const btnUrnaPadrao = document.getElementById('btn-urna-padrao');
+    const btnUrnaMestra = document.getElementById('btn-urna-mestra');
+    const boxConfigUrnaPadrao = document.getElementById('box-config-urna-padrao');
+    const boxConfigUrnaMestra = document.getElementById('box-config-urna-mestra');
+    const cfgNumeroUrna = document.getElementById('cfg-numero-urna');
+    const cfgQtdUrnasAuxiliares = document.getElementById('cfg-qtd-urnas-auxiliares');
+    const btnConfirmarPadrao = document.getElementById('btn-confirmar-padrao');
+    const btnConfirmarMestra = document.getElementById('btn-confirmar-mestra');
 
+    // TELAS DE SEGURANÇA E CONFIGURAÇÃO
     const telaSenha = document.getElementById('tela-senha');
     const formSenha = document.getElementById('form-senha');
     const cfgSenha = document.getElementById('cfg-senha');
@@ -35,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const telaVotacao = document.getElementById('tela-votacao');
     const telaConcluido = document.getElementById('tela-concluido');
     const telaResultado = document.getElementById('tela-resultado');
+    const telaConsolidacaoMestra = document.getElementById('tela-consolidação-mestra');
 
     // CADASTRO
     const formCadastro = document.getElementById('form-cadastro');
@@ -43,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cadFoto = document.getElementById('cad-foto');
     const msgCadastro = document.getElementById('msg-cadastro');
     const btnIniciarEleicao = document.getElementById('btn-iniciar-eleicao');
-    const subTituloCadastro = document.getElementById('sub-titulo-cadastro');
 
     // VOTAÇÃO
     const votoNumero = document.getElementById('voto-numero');
@@ -66,39 +77,65 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnValidarProximo = document.getElementById('btn-validar-proximo');
     const btnCancelarProximo = document.getElementById('btn-cancelar-proximo');
 
-    // RELATÓRIO FINAL
+    // RELATÓRIO FINAL E CONSOLIDAÇÃO
+    const tituloRelatorioTipo = document.getElementById('titulo-relatorio-tipo');
     const cardVencedorDestaque = document.getElementById('card-vencedor-destaque');
     const nomeVencedorDestaque = document.getElementById('nome-vencedor-destaque');
     const fotoVencedorDestaque = document.getElementById('foto-vencedor-destaque');
-    const alertaSegundoTurno = document.getElementById('alerta-segundo-turno');
-    const containerClassificadosSegundoTurno = document.getElementById('container-classificados-segundo-turno');
     const corpoRanking = document.getElementById('corpo-ranking');
     const totalValidos = document.getElementById('total-validos');
     const totalBranco = document.getElementById('total-branco');
     const totalNulos = document.getElementById('total-nulos');
     const totalGeral = document.getElementById('total-geral');
+    const containerBtnApuracaoMestra = document.getElementById('container-btn-apuracao-mestra');
+    const btnIrApuracaoMestra = document.getElementById('btn-ir-apuracao-mestra');
+    const containerEntradasUrnasPadrao = document.getElementById('container-entradas-urnas-padrao');
+    const btnCalcularResultadoGeral = document.getElementById('btn-calcular-resultado-geral');
+    const btnVoltarRelatorioMestra = document.getElementById('btn-voltar-relatorio-mestra');
+
     const btnReiniciar = document.getElementById('btn-reiniciar');
     const btnPdf = document.getElementById('btn-pdf'); 
     const btnProximoEleitor = document.getElementById('btn-proximo-eleitor');
-    const btnIrSegundoTurno = document.getElementById('btn-ir-segundo-turno');
 
     // ==========================================================================
-    // ETAPA 0: SELEÇÃO DE TURNO
+    // ETAPA PRELIMINAR: SELEÇÃO DE URNA PADRÃO VS MESTRA
     // ==========================================================================
-    if (btnPrimeiroTurno && btnSegundoTurno) {
-        btnPrimeiroTurno.addEventListener('click', () => {
-            turnoSelecionado = 1;
-            avancarParaSenha();
+    if (btnUrnaPadrao && btnUrnaMestra) {
+        btnUrnaPadrao.addEventListener('click', () => {
+            tipoUrna = 'padrao';
+            if (containerBotoesTipoUrna) containerBotoesTipoUrna.classList.add('tela-oculta');
+            if (instrucaoTipoUrna) instrucaoTipoUrna.innerText = "Configuração da Urna Padrão (Seccional):";
+            if (boxConfigUrnaPadrao) boxConfigUrnaPadrao.classList.remove('tela-oculta');
+            if (boxConfigUrnaMestra) boxConfigUrnaMestra.classList.add('tela-oculta');
         });
 
-        btnSegundoTurno.addEventListener('click', () => {
-            turnoSelecionado = 2;
+        btnUrnaMestra.addEventListener('click', () => {
+            tipoUrna = 'mestra';
+            if (containerBotoesTipoUrna) containerBotoesTipoUrna.classList.add('tela-oculta');
+            if (instrucaoTipoUrna) instrucaoTipoUrna.innerText = "Configuração da Urna Mestra (Consolidadora):";
+            if (boxConfigUrnaMestra) boxConfigUrnaMestra.classList.remove('tela-oculta');
+            if (boxConfigUrnaPadrao) boxConfigUrnaPadrao.classList.add('tela-oculta');
+        });
+    }
+
+    if (btnConfirmarPadrao) {
+        btnConfirmarPadrao.addEventListener('click', () => {
+            const num = parseInt(cfgNumeroUrna.value, 10);
+            numeroUrnaPadrao = num > 0 ? num : 1;
+            avancarParaSenha();
+        });
+    }
+
+    if (btnConfirmarMestra) {
+        btnConfirmarMestra.addEventListener('click', () => {
+            const qtd = parseInt(cfgQtdUrnasAuxiliares.value, 10);
+            qtdUrnasAuxiliares = qtd > 0 ? qtd : 1;
             avancarParaSenha();
         });
     }
 
     function avancarParaSenha() {
-        if (telaTurno) telaTurno.classList.add('tela-oculta');
+        if (telaTipoUrna) telaTipoUrna.classList.add('tela-oculta');
         if (telaSenha) telaSenha.classList.remove('tela-oculta');
         setTimeout(() => { if (cfgSenha) cfgSenha.focus(); }, 50);
     }
@@ -137,16 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (telaConfiguracao) telaConfiguracao.classList.add('tela-oculta');
             if (telaCadastro) telaCadastro.classList.remove('tela-oculta');
-
-            if (subTituloCadastro) {
-                if (turnoSelecionado === 2) {
-                    subTituloCadastro.innerText = "Segundo Turno: Você deve cadastrar exatamente 2 candidatos.";
-                    if (btnIniciarEleicao) btnIniciarEleicao.classList.add('tela-oculta');
-                } else {
-                    subTituloCadastro.innerText = "Primeiro Turno: Sem limite de candidatos.";
-                    if (btnIniciarEleicao) btnIniciarEleicao.classList.remove('tela-oculta');
-                }
-            }
 
             setTimeout(() => { if (cadNumero) cadNumero.focus(); }, 50);
         });
@@ -188,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================================================
-    // ETAPA 1: CADASTRO DE CANDIDATOS COM UPLOAD DE FOTO (FileReader API)
+    // ETAPA 1: CADASTRO DE CANDIDATOS
     // ==========================================================================
     if (formCadastro) {
         formCadastro.addEventListener('submit', (e) => {
@@ -214,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Lê a imagem selecionada e converte em DataURL (Base64)
             const leitor = new FileReader();
             leitor.onload = function(evento) {
                 const fotoBase64 = evento.target.result;
@@ -225,8 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 votosCandidatos[numero] = 0;
 
-                const totalCadastrados = Object.keys(candidatos).length;
-
                 if (msgCadastro) {
                     msgCadastro.style.color = '#27ae60';
                     msgCadastro.innerText = `Candidato ${nome} (${numero}) cadastrado com sucesso!`;
@@ -234,13 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 formCadastro.reset();
                 cadNumero.focus();
-
-                if (turnoSelecionado === 2 && totalCadastrados === 2) {
-                    setTimeout(() => {
-                        alert("Segundo turno: 2 candidatos cadastrados com sucesso. Iniciando votação!");
-                        iniciarVotacao();
-                    }, 400);
-                }
             };
 
             leitor.readAsDataURL(arquivoFoto);
@@ -455,131 +472,174 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================================================
-    // ETAPA 3: APURAÇÃO E RELATÓRIO COM DESTAQUES VISUAIS (FOTOS E NOME)
+    // ETAPA 3: APURAÇÃO E RELATÓRIO DA URNA (TURNO ÚNICO)
     // ==========================================================================
-    function gerarRelatorioFinal() {
+    function gerarRelatorioFinal(votosConsolidadosTotais = null) {
         if (!corpoRanking) return;
         corpoRanking.innerHTML = ''; 
 
-        if (alertaSegundoTurno) alertaSegundoTurno.classList.add('tela-oculta');
         if (cardVencedorDestaque) cardVencedorDestaque.classList.add('tela-oculta');
-        if (containerClassificadosSegundoTurno) containerClassificadosSegundoTurno.innerHTML = '';
+        if (containerBtnApuracaoMestra) containerBtnApuracaoMestra.classList.add('tela-oculta');
+
+        if (tipoUrna === 'padrao') {
+            if (tituloRelatorioTipo) tituloRelatorioTipo.innerText = `Boletim da Urna Seccional Nº ${numeroUrnaPadrao}`;
+        } else {
+            if (tituloRelatorioTipo) tituloRelatorioTipo.innerText = votosConsolidadosTotais ? "Resultado Geral Consolidado da Eleição" : "Boletim Local da Urna Mestra";
+            if (!votosConsolidadosTotais && containerBtnApuracaoMestra) {
+                containerBtnApuracaoMestra.classList.remove('tela-oculta');
+            }
+        }
+
+        const contagemCandidatos = votosConsolidadosTotais ? votosConsolidadosTotais.candidatos : votosCandidatos;
+        const contagemBrancos = votosConsolidadosTotais ? votosConsolidadosTotais.brancos : votosBrancos;
+        const contagemNulos = votosConsolidadosTotais ? votosConsolidadosTotais.nulos : votosNulos;
+        const contagemTotal = votosConsolidadosTotais ? votosConsolidadosTotais.total : totalGeralVotos;
 
         const listaCandidatos = Object.keys(candidatos).map(num => ({
             numero: num,
             nome: candidatos[num].nome,
             foto: candidatos[num].foto,
-            votos: votosCandidatos[num] || 0
+            votos: contagemCandidatos[num] || 0
         })).sort((a, b) => b.votos - a.votos);
 
-        const totalVotosValidos = totalGeralVotos - (votosBrancos + votosNulos);
+        const totalVotosValidos = contagemTotal - (contagemBrancos + contagemNulos);
 
-        let temVencedorPrimeiroTurno = false;
-        if (listaCandidatos.length > 0 && totalVotosValidos > 0) {
-            const votosMaisVotado = listaCandidatos[0].votos;
-            if ((votosMaisVotado / totalVotosValidos) > 0.5) {
-                temVencedorPrimeiroTurno = true;
-            }
-        }
+        const eUrnaPadraoSemConsolidar = (tipoUrna === 'padrao') || (tipoUrna === 'mestra' && !votosConsolidadosTotais);
 
-        const eDefinido = (turnoSelecionado === 2 && listaCandidatos.length > 0 && listaCandidatos[0].votos > 0) || (turnoSelecionado === 1 && temVencedorPrimeiroTurno);
-
-        // 1. CASO HAJA CAMPEÃO/ELEITO
-        if (eDefinido) {
+        // Se for a Urna Mestra após a consolidação geral, exibe imediatamente o vencedor absoluto (1º lugar)
+        if (!eUrnaPadraoSemConsolidar && listaCandidatos.length > 0) {
             const vencedor = listaCandidatos[0];
             if (cardVencedorDestaque && nomeVencedorDestaque && fotoVencedorDestaque) {
                 nomeVencedorDestaque.innerText = vencedor.nome;
                 fotoVencedorDestaque.src = vencedor.foto;
                 cardVencedorDestaque.classList.remove('tela-oculta');
             }
-        } 
-        // 2. CASO VÁ PARA O SEGUNDO TURNO (LADO A LADO SEM NÚMERO)
-        else if (turnoSelecionado === 1 && listaCandidatos.length >= 2) {
-            if (alertaSegundoTurno) alertaSegundoTurno.classList.remove('tela-oculta');
-
-            let candidatosClassificados = [];
-            
-            if (listaCandidatos[0].votos === listaCandidatos[1].votos) {
-                const votosEmpatadosTopo = listaCandidatos[0].votos;
-                candidatosClassificados = listaCandidatos.filter(c => c.votos === votosEmpatadosTopo);
-            } else {
-                const votosSegundoLugar = listaCandidatos[1].votos;
-                candidatosClassificados = listaCandidatos.filter(c => c.votos >= votosSegundoLugar);
-            }
-
-            candidatosSegundoTurno = candidatosClassificados;
-
-            // Renderiza os cards dos classificados lado a lado (Apenas Nome e Foto)
-            if (containerClassificadosSegundoTurno) {
-                candidatosSegundoTurno.forEach(cand => {
-                    const cardItem = document.createElement('div');
-                    cardItem.className = 'item-classificado-card';
-                    cardItem.innerHTML = `
-                        <div class="nome-classificado-card">${cand.nome}</div>
-                        <div class="container-foto-classificado">
-                            <img src="${cand.foto}" alt="${cand.nome}" class="foto-destaque">
-                        </div>
-                    `;
-                    containerClassificadosSegundoTurno.appendChild(cardItem);
-                });
-            }
         }
 
-        // Tabela completa de posições
         listaCandidatos.forEach((cand, index) => {
             const percValidos = totalVotosValidos > 0 ? ((cand.votos / totalVotosValidos) * 100).toFixed(1) : "0.0";
-            const percGeral = totalGeralVotos > 0 ? ((cand.votos / totalGeralVotos) * 100).toFixed(1) : "0.0";
+            const percGeral = contagemTotal > 0 ? ((cand.votos / contagemTotal) * 100).toFixed(1) : "0.0";
 
             const tr = document.createElement('tr');
 
-            const eEleito = (turnoSelecionado === 2 && index === 0 && cand.votos > 0) || (turnoSelecionado === 1 && temVencedorPrimeiroTurno && index === 0);
+            // O mais votado absoluto é considerado o eleito na apuração final consolidada da Urna Mestra
+            const eEleito = !eUrnaPadraoSemConsolidar && index === 0 && cand.votos > 0;
             const badgeEleito = eEleito ? '<span class="badge-eleito">Eleito</span>' : '';
+
+            const colunaEstatistica = eUrnaPadraoSemConsolidar 
+                ? `<strong>${cand.votos} votos válidos</strong>` 
+                : `<strong>${percValidos}% válidos</strong> (${percGeral}% total)`;
 
             tr.innerHTML = `
                 <td class="col-posicao"><strong>${index + 1}º</strong></td>
                 <td class="col-numero"><strong>${cand.numero}</strong></td>
                 <td class="col-nome">${cand.nome} ${badgeEleito}</td>
                 <td class="col-votos"><strong>${cand.votos} votos</strong></td>
-                <td class="col-porcentagem"><strong>${percValidos}% válidos</strong> (${percGeral}% total)</td>
+                <td class="col-porcentagem">${colunaEstatistica}</td>
             `;
             corpoRanking.appendChild(tr);
         });
 
-        const percBrancos = totalGeralVotos > 0 ? ((votosBrancos / totalGeralVotos) * 100).toFixed(1) : "0.0";
-        const percNulos = totalGeralVotos > 0 ? ((votosNulos / totalGeralVotos) * 100).toFixed(1) : "0.0";
-        const percValidosTotal = totalGeralVotos > 0 ? ((totalVotosValidos / totalGeralVotos) * 100).toFixed(1) : "0.0";
+        const percBrancos = contagemTotal > 0 ? ((contagemBrancos / contagemTotal) * 100).toFixed(1) : "0.0";
+        const percNulos = contagemTotal > 0 ? ((contagemNulos / contagemTotal) * 100).toFixed(1) : "0.0";
+        const percValidosTotal = contagemTotal > 0 ? ((totalVotosValidos / contagemTotal) * 100).toFixed(1) : "0.0";
 
-        if (totalValidos) totalValidos.innerText = `${totalVotosValidos} (${percValidosTotal}%)`;
-        if (totalBranco) totalBranco.innerText = `${votosBrancos} (${percBrancos}%)`;
-        if (totalNulos) totalNulos.innerText = `${votosNulos} (${percNulos}%)`;
-        if (totalGeral) totalGeral.innerText = totalGeralVotos;
+        if (totalValidos) totalValidos.innerText = eUrnaPadraoSemConsolidar ? totalVotosValidos : `${totalVotosValidos} (${percValidosTotal}%)`;
+        if (totalBranco) totalBranco.innerText = eUrnaPadraoSemConsolidar ? contagemBrancos : `${contagemBrancos} (${percBrancos}%)`;
+        if (totalNulos) totalNulos.innerText = eUrnaPadraoSemConsolidar ? contagemNulos : `${contagemNulos} (${percNulos}%)`;
+        if (totalGeral) totalGeral.innerText = contagemTotal;
     }
 
-    if (btnIrSegundoTurno) {
-        btnIrSegundoTurno.addEventListener('click', () => {
-            votosCandidatos = {};
-            votosBrancos = 0;
-            votosNulos = 0;
-            totalGeralVotos = 0;
-            candidatos = {}; 
+    // ==========================================================================
+    // ETAPA 4: TELA DE CONSOLIDAÇÃO GERAL (URNA MESTRA)
+    // ==========================================================================
+    if (btnIrApuracaoMestra) {
+        btnIrApuracaoMestra.addEventListener('click', () => {
+            if (telaResultado) telaResultado.classList.add('tela-oculta');
+            if (telaConsolidacaoMestra) telaConsolidacaoMestra.classList.remove('tela-oculta');
 
-            turnoSelecionado = 2;
+            if (containerEntradasUrnasPadrao) {
+                containerEntradasUrnasPadrao.innerHTML = '';
 
-            candidatosSegundoTurno.forEach(cand => {
-                candidatos[cand.numero] = {
-                    nome: cand.nome,
-                    foto: cand.foto
-                };
-                votosCandidatos[cand.numero] = 0;
+                for (let i = 1; i <= qtdUrnasAuxiliares; i++) {
+                    const cardUrna = document.createElement('div');
+                    cardUrna.className = 'card-urna-seccional-input';
+
+                    let inputsCandidatosHTML = '';
+                    Object.keys(candidatos).forEach(num => {
+                        inputsCandidatosHTML += `
+                            <div class="campo-form">
+                                <label>Votos para ${candidatos[num].nome} (Nº ${num}):</label>
+                                <input type="number" class="voto-aux-cand" data-urna="${i}" data-numero="${num}" min="0" value="0">
+                            </div>
+                        `;
+                    });
+
+                    cardUrna.innerHTML = `
+                        <h4>Boletim de Urna Nº ${i}</h4>
+                        <div class="grid-inputs-candidatos">
+                            ${inputsCandidatosHTML}
+                            <div class="campo-form">
+                                <label>Votos em Branco:</label>
+                                <input type="number" class="voto-aux-branco" data-urna="${i}" min="0" value="0">
+                            </div>
+                            <div class="campo-form">
+                                <label>Votos Nulos:</label>
+                                <input type="number" class="voto-aux-nulo" data-urna="${i}" min="0" value="0">
+                            </div>
+                        </div>
+                    `;
+                    containerEntradasUrnasPadrao.appendChild(cardUrna);
+                }
+            }
+        });
+    }
+
+    if (btnVoltarRelatorioMestra) {
+        btnVoltarRelatorioMestra.addEventListener('click', () => {
+            if (telaConsolidacaoMestra) telaConsolidacaoMestra.classList.add('tela-oculta');
+            if (telaResultado) telaResultado.classList.remove('tela-oculta');
+        });
+    }
+
+    if (btnCalcularResultadoGeral) {
+        btnCalcularResultadoGeral.addEventListener('click', () => {
+            let somatorioCandidatos = { ...votosCandidatos };
+            let somatorioBrancos = votosBrancos;
+            let somatorioNulos = votosNulos;
+            let somatorioTotal = totalGeralVotos;
+
+            const inputsCand = document.querySelectorAll('.voto-aux-cand');
+            inputsCand.forEach(input => {
+                const num = input.getAttribute('data-numero');
+                const qtd = parseInt(input.value, 10) || 0;
+                somatorioCandidatos[num] = (somatorioCandidatos[num] || 0) + qtd;
+                somatorioTotal += qtd;
             });
 
-            if (telaResultado) telaResultado.classList.add('tela-oculta');
-            if (telaVotacao) telaVotacao.classList.remove('tela-oculta');
+            const inputsBranco = document.querySelectorAll('.voto-aux-branco');
+            inputsBranco.forEach(input => {
+                const qtd = parseInt(input.value, 10) || 0;
+                somatorioBrancos += qtd;
+                somatorioTotal += qtd;
+            });
 
-            const nomesAlerta = candidatosSegundoTurno.map(c => `${c.nome} (${c.numero})`).join(', ');
-            alert(`2º Turno Iniciado!\nDisputa entre os ${candidatosSegundoTurno.length} candidatos classificados:\n${nomesAlerta}`);
+            const inputsNulo = document.querySelectorAll('.voto-aux-nulo');
+            inputsNulo.forEach(input => {
+                const qtd = parseInt(input.value, 10) || 0;
+                somatorioNulos += qtd;
+                somatorioTotal += qtd;
+            });
 
-            limparCamposVoto();
+            if (telaConsolidacaoMestra) telaConsolidacaoMestra.classList.add('tela-oculta');
+            if (telaResultado) telaResultado.classList.remove('tela-oculta');
+
+            gerarRelatorioFinal({
+                candidatos: somatorioCandidatos,
+                brancos: somatorioBrancos,
+                nulos: somatorioNulos,
+                total: somatorioTotal
+            });
         });
     }
 
