@@ -16,6 +16,14 @@ body {
     padding: 20px;
 }
 
+.tela-oculta {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
 .conteudo-central {
     display: flex;
     justify-content: center;
@@ -57,9 +65,9 @@ body {
 }
 
 /* ==========================================
-   CONTAINERS DE TELAS
+   CARDS E CONTAINERS DE TELA
    ========================================== */
-#tela-turno, #tela-senha, #tela-configuracao, #tela-cadastro, #tela-concluido {
+.card-tela {
     background: #ffffff;
     padding: 30px;
     border-radius: 12px;
@@ -69,19 +77,7 @@ body {
     margin: 0 auto;
 }
 
-#tela-votacao {
-    background: #ffffff;
-    padding: 50px; 
-    border-radius: 16px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-    width: 100%;
-    max-width: 1000px; 
-    margin: 0 auto;
-    position: relative;
-    padding-bottom: 100px; 
-}
-
-#tela-resultado {
+.card-tela-larga {
     background: #ffffff;
     padding: 40px;
     border-radius: 12px;
@@ -89,6 +85,14 @@ body {
     width: 100%;
     max-width: 1000px;
     margin: 0 auto;
+}
+
+#tela-votacao {
+    padding: 50px; 
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    position: relative;
+    padding-bottom: 100px; 
 }
 
 h2, h3 {
@@ -109,7 +113,253 @@ h2, h3 {
 }
 
 /* ==========================================
-   BOTÕES E FORMULÁRIOS
+   ESTILOS DA TELA DE CONCLUÍDO (FIM)
+   ========================================== */
+.titulo-fim {
+    font-size: 3rem;
+    color: #27ae60;
+    margin-bottom: 20px;
+}
+
+.texto-fim {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+/* ==========================================
+   MODAIS DE SEGURANÇA (AUTENTICAÇÃO)
+   ========================================== */
+.box-autenticacao {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: #fff3cd;
+    border: 2px solid #ffeeba;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.box-autenticacao p {
+    color: #856404;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.box-autenticacao-controles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.box-autenticacao input {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn-modal-confirmar {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-modal-confirmar:hover {
+    background-color: #219653;
+}
+
+.btn-modal-cancelar {
+    background-color: #7f8c8d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-modal-cancelar:hover {
+    background-color: #6c7a89;
+}
+
+/* ==========================================
+   DESTAQUES NO RELATÓRIO FINAL
+   ========================================== */
+
+/* DESTAQUE VENCEDOR */
+.card-vencedor-destaque {
+    background: #e8f8f5;
+    border: 3px solid #27ae60;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.15);
+}
+
+.titulo-vencedor-destaque {
+    color: #27ae60;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.nome-vencedor-destaque {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #1e8449;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.container-foto-vencedor {
+    width: 180px;
+    height: 220px;
+    margin: 0 auto;
+    border: 4px solid #27ae60;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* DESTAQUE 2º TURNO (LADO A LADO) */
+.alerta-segundo-turno {
+    background-color: #fff3cd;
+    border: 2px solid #ffeeba;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.alerta-segundo-turno h3 {
+    color: #856404;
+    margin-bottom: 8px;
+}
+
+.alerta-segundo-turno p {
+    color: #856404;
+    font-size: 1.05rem;
+}
+
+.subtitulo-segundo-turno {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #795548;
+}
+
+.container-classificados-segundo-turno {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.item-classificado-card {
+    background: #ffffff;
+    border: 2px solid #f39c12;
+    border-radius: 10px;
+    padding: 15px;
+    width: 180px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.nome-classificado-card {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d35400;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    min-height: 2.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-foto-classificado {
+    width: 140px;
+    height: 175px;
+    margin: 0 auto;
+    border: 3px solid #f39c12;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.foto-destaque {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-segundo-turno-acao {
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.05rem;
+    transition: background 0.2s;
+    text-transform: uppercase;
+}
+
+.btn-segundo-turno-acao:hover {
+    background-color: #d35400;
+}
+
+/* ==========================================
+   TABELA E RELATÓRIO DE CANDIDATOS
+   ========================================== */
+.tabela-ranking {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.col-posicao, .col-numero {
+    padding: 10px;
+    text-align: center;
+}
+
+.col-nome {
+    padding: 10px;
+}
+
+.col-votos, .col-porcentagem {
+    padding: 10px;
+    text-align: right;
+}
+
+.col-porcentagem {
+    color: #27ae60;
+}
+
+.badge-eleito {
+    background: #27ae60;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+/* ==========================================
+   FORMULÁRIOS E BOTÕES GERAIS
    ========================================== */
 .botoes-turno-container {
     display: flex;
@@ -132,14 +382,15 @@ h2, h3 {
 }
 
 .btn-turno:hover { background-color: #2980b9; }
+
 #btn-segundo-turno { background-color: #e67e22; }
 #btn-segundo-turno:hover { background-color: #d35400; }
 
-#form-senha div, #form-configuracao div, #form-cadastro div {
+.campo-form {
     margin-bottom: 15px;
 }
 
-#form-senha label, #form-configuracao label, #form-cadastro label {
+.campo-form label {
     display: block;
     margin-bottom: 5px;
     color: #555;
@@ -147,7 +398,7 @@ h2, h3 {
     font-size: 0.9rem;
 }
 
-#form-senha input, #form-configuracao input, #form-cadastro input {
+.campo-form input {
     width: 100%;
     padding: 12px;
     border: 2px solid #bdc3c7;
@@ -156,15 +407,20 @@ h2, h3 {
     transition: border-color 0.3s;
 }
 
-#form-senha input:focus, #form-configuracao input:focus, #form-cadastro input:focus {
+.campo-form input[type="file"] {
+    padding: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+}
+
+.campo-form input:focus {
     border-color: #3498db;
     outline: none;
 }
 
-#btn-salvar-senha, #btn-salvar-config, #btn-cadastrar, #btn-reiniciar, #btn-proximo-eleitor, #btn-pdf {
+.btn-primario, .btn-sucesso, .btn-secundario {
     width: 100%;
     padding: 14px;
-    background-color: #3498db; 
     color: white;
     border: none;
     border-radius: 6px;
@@ -175,22 +431,22 @@ h2, h3 {
     text-transform: uppercase;
 }
 
-#btn-salvar-senha:hover, #btn-salvar-config:hover, #btn-cadastrar:hover { background-color: #2980b9; }
+.btn-primario { background-color: #3498db; }
+.btn-primario:hover { background-color: #2980b9; }
+
+.btn-sucesso { background-color: #27ae60; }
+.btn-sucesso:hover { background-color: #219653; }
+
+.btn-secundario { background-color: #34495e; }
+.btn-secundario:hover { background-color: #2c3e50; }
 
 #btn-iniciar-eleicao {
-    background-color: #27ae60;
     max-width: 250px; 
     margin: 20px auto 0 auto; 
     display: block; 
     padding: 12px 20px;
     font-size: 0.95rem;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
 }
-#btn-iniciar-eleicao:hover { background-color: #219653; }
 
 .botoes-resultado-container {
     display: grid;
@@ -198,12 +454,6 @@ h2, h3 {
     gap: 20px;
     margin-top: 25px;
 }
-
-#btn-pdf { background-color: #34495e; }
-#btn-pdf:hover { background-color: #2c3e50; }
-
-#btn-reiniciar { background-color: #27ae60; }
-#btn-reiniciar:hover { background-color: #219653; }
 
 .area-adm-encerrar {
     position: absolute;
@@ -316,7 +566,7 @@ h2, h3 {
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-#voto-foto {
+.foto-candidato {
     width: 100%;
     height: 100%;
     object-fit: cover; 
@@ -382,8 +632,11 @@ h2, h3 {
     color: #2c3e50;
 }
 
-#total-geral { color: #e74c3c !important; }
+.total-geral-destaque { 
+    color: #e74c3c !important; 
+}
 
+/* IMPRESSÃO DE RELATÓRIO PDF */
 @media print {
     body {
         background-color: #ffffff !important;
