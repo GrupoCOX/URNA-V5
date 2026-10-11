@@ -6,13 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // BASE DE DADOS E CONTADORES
     let turnoSelecionado = 1; 
-    let senhaEncerramento = ""; // Armazena a senha cadastrada
+    let senhaEncerramento = ""; 
     let candidatos = {}; 
     let votosCandidatos = {}; 
     let votosBrancos = 0;
     let votosNulos = 0;
     let totalGeralVotos = 0;
-    let contadorOrdemCadastro = 0; 
     let candidatosSegundoTurno = []; 
 
     // ELEMENTOS DAS TELAS INICIAIS
@@ -41,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formCadastro = document.getElementById('form-cadastro');
     const cadNumero = document.getElementById('cad-numero');
     const cadNome = document.getElementById('cad-nome');
+    const cadFoto = document.getElementById('cad-foto');
     const msgCadastro = document.getElementById('msg-cadastro');
     const btnIniciarEleicao = document.getElementById('btn-iniciar-eleicao');
     const subTituloCadastro = document.getElementById('sub-titulo-cadastro');
@@ -60,7 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnValidarEncerramento = document.getElementById('btn-validar-encerramento');
     const btnCancelarEncerramento = document.getElementById('btn-cancelar-encerramento');
 
+    // AUTENTICAÇÃO DE PRÓXIMO ELEITOR
+    const boxAutenticacaoProximo = document.getElementById('box-autenticacao-proximo');
+    const senhaConfirmacaoProximo = document.getElementById('senha-confirmacao-proximo');
+    const btnValidarProximo = document.getElementById('btn-validar-proximo');
+    const btnCancelarProximo = document.getElementById('btn-cancelar-proximo');
+
     // RELATÓRIO FINAL
+    const cardVencedorDestaque = document.getElementById('card-vencedor-destaque');
+    const nomeVencedorDestaque = document.getElementById('nome-vencedor-destaque');
+    const fotoVencedorDestaque = document.getElementById('foto-vencedor-destaque');
+    const alertaSegundoTurno = document.getElementById('alerta-segundo-turno');
+    const containerClassificadosSegundoTurno = document.getElementById('container-classificados-segundo-turno');
     const corpoRanking = document.getElementById('corpo-ranking');
     const totalValidos = document.getElementById('total-validos');
     const totalBranco = document.getElementById('total-branco');
@@ -69,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnReiniciar = document.getElementById('btn-reiniciar');
     const btnPdf = document.getElementById('btn-pdf'); 
     const btnProximoEleitor = document.getElementById('btn-proximo-eleitor');
-    const alertaSegundoTurno = document.getElementById('alerta-segundo-turno');
     const btnIrSegundoTurno = document.getElementById('btn-ir-segundo-turno');
 
     // ==========================================================================
@@ -88,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function avancarParaSenha() {
-        if (telaTurno) telaTurno.style.display = 'none';
-        if (telaSenha) telaSenha.style.display = 'block';
+        if (telaTurno) telaTurno.classList.add('tela-oculta');
+        if (telaSenha) telaSenha.classList.remove('tela-oculta');
         setTimeout(() => { if (cfgSenha) cfgSenha.focus(); }, 50);
     }
 
@@ -108,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             senhaEncerramento = senhaDigitada;
 
-            if (telaSenha) telaSenha.style.display = 'none';
-            if (telaConfiguracao) telaConfiguracao.style.display = 'block';
+            if (telaSenha) telaSenha.classList.add('tela-oculta');
+            if (telaConfiguracao) telaConfiguracao.classList.remove('tela-oculta');
 
             setTimeout(() => { if (cfgTopo) cfgTopo.focus(); }, 50);
         });
@@ -125,16 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (textoTopo && cfgTopo) textoTopo.innerText = cfgTopo.value.trim().toUpperCase();
             if (textoRodape && cfgRodape) textoRodape.innerText = cfgRodape.value.trim().toUpperCase();
 
-            if (telaConfiguracao) telaConfiguracao.style.display = 'none';
-            if (telaCadastro) telaCadastro.style.display = 'block';
+            if (telaConfiguracao) telaConfiguracao.classList.add('tela-oculta');
+            if (telaCadastro) telaCadastro.classList.remove('tela-oculta');
 
             if (subTituloCadastro) {
                 if (turnoSelecionado === 2) {
                     subTituloCadastro.innerText = "Segundo Turno: Você deve cadastrar exatamente 2 candidatos.";
-                    if (btnIniciarEleicao) btnIniciarEleicao.style.display = 'none';
+                    if (btnIniciarEleicao) btnIniciarEleicao.classList.add('tela-oculta');
                 } else {
                     subTituloCadastro.innerText = "Primeiro Turno: Sem limite de candidatos.";
-                    if (btnIniciarEleicao) btnIniciarEleicao.style.display = 'block';
+                    if (btnIniciarEleicao) btnIniciarEleicao.classList.remove('tela-oculta');
                 }
             }
 
@@ -157,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             oscilador.type = 'square'; 
 
-            oscilador.frequency.setValueAtTime(1050, tempoAtual);          
+            oscilador.frequency.setValueAtTime(1050, tempoAtual);         
             oscilador.frequency.setValueAtTime(1175, tempoAtual + 0.07);   
             oscilador.frequency.setValueAtTime(1320, tempoAtual + 0.14);   
             oscilador.frequency.setValueAtTime(940, tempoAtual + 0.22);    
@@ -178,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================================================
-    // ETAPA 1: CADASTRO DE CANDIDATOS
+    // ETAPA 1: CADASTRO DE CANDIDATOS COM UPLOAD DE FOTO (FileReader API)
     // ==========================================================================
     if (formCadastro) {
         formCadastro.addEventListener('submit', (e) => {
@@ -186,11 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const numero = cadNumero.value.trim();
             const nome = cadNome.value.trim();
+            const arquivoFoto = cadFoto.files[0];
 
-            if (!numero || !nome) {
+            if (!numero || !nome || !arquivoFoto) {
                 if (msgCadastro) {
                     msgCadastro.style.color = '#e74c3c';
-                    msgCadastro.innerText = "Por favor, preencha o número e o nome do candidato.";
+                    msgCadastro.innerText = "Por favor, preencha todos os campos e selecione uma foto.";
                 }
                 return;
             }
@@ -203,30 +214,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            contadorOrdemCadastro++;
+            // Lê a imagem selecionada e converte em DataURL (Base64)
+            const leitor = new FileReader();
+            leitor.onload = function(evento) {
+                const fotoBase64 = evento.target.result;
 
-            candidatos[numero] = {
-                nome: nome,
-                ordemFoto: contadorOrdemCadastro
+                candidatos[numero] = {
+                    nome: nome,
+                    foto: fotoBase64
+                };
+                votosCandidatos[numero] = 0;
+
+                const totalCadastrados = Object.keys(candidatos).length;
+
+                if (msgCadastro) {
+                    msgCadastro.style.color = '#27ae60';
+                    msgCadastro.innerText = `Candidato ${nome} (${numero}) cadastrado com sucesso!`;
+                }
+
+                formCadastro.reset();
+                cadNumero.focus();
+
+                if (turnoSelecionado === 2 && totalCadastrados === 2) {
+                    setTimeout(() => {
+                        alert("Segundo turno: 2 candidatos cadastrados com sucesso. Iniciando votação!");
+                        iniciarVotacao();
+                    }, 400);
+                }
             };
-            votosCandidatos[numero] = 0;
 
-            const totalCadastrados = Object.keys(candidatos).length;
-
-            if (msgCadastro) {
-                msgCadastro.style.color = '#27ae60';
-                msgCadastro.innerText = `Candidato ${nome} (${numero}) cadastrado com sucesso! Foto: foto/${contadorOrdemCadastro}.jpg`;
-            }
-
-            formCadastro.reset();
-            cadNumero.focus();
-
-            if (turnoSelecionado === 2 && totalCadastrados === 2) {
-                setTimeout(() => {
-                    alert("Segundo turno: 2 candidatos cadastrados com sucesso. Iniciando votação!");
-                    iniciarVotacao();
-                }, 400);
-            }
+            leitor.readAsDataURL(arquivoFoto);
         });
     }
 
@@ -245,8 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function iniciarVotacao() {
-        if (telaCadastro) telaCadastro.style.display = 'none';
-        if (telaVotacao) telaVotacao.style.display = 'block';
+        if (telaCadastro) telaCadastro.classList.add('tela-oculta');
+        if (telaVotacao) telaVotacao.classList.remove('tela-oculta');
         limparCamposVoto();
     }
 
@@ -259,19 +276,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (numDigitado === '') {
                 if (votoNome) votoNome.innerText = '...';
-                if (votoFoto) votoFoto.style.display = 'none';
+                if (votoFoto) {
+                    votoFoto.src = '';
+                    votoFoto.classList.add('tela-oculta');
+                }
                 return;
             }
 
             if (candidatos[numDigitado]) {
                 if (votoNome) votoNome.innerText = candidatos[numDigitado].nome;
                 if (votoFoto) {
-                    votoFoto.src = `foto/${candidatos[numDigitado].ordemFoto}.jpg`;
-                    votoFoto.style.display = 'block'; 
+                    votoFoto.src = candidatos[numDigitado].foto;
+                    votoFoto.classList.remove('tela-oculta');
                 }
             } else {
                 if (votoNome) votoNome.innerText = 'VOTO NULO (Candidato não encontrado)';
-                if (votoFoto) votoFoto.style.display = 'none'; 
+                if (votoFoto) {
+                    votoFoto.src = '';
+                    votoFoto.classList.add('tela-oculta');
+                }
             }
         });
     }
@@ -284,7 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 votoNumero.disabled = true;
             }
             if (votoNome) votoNome.innerText = 'VOTO EM BRANCO';
-            if (votoFoto) votoFoto.style.display = 'none'; 
+            if (votoFoto) {
+                votoFoto.src = '';
+                votoFoto.classList.add('tela-oculta');
+            }
         });
     }
 
@@ -317,8 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
             totalGeralVotos++;
             tocarSomUrna();
 
-            if (telaVotacao) telaVotacao.style.display = 'none';
-            if (telaConcluido) telaConcluido.style.display = 'block';
+            if (telaVotacao) telaVotacao.classList.add('tela-oculta');
+            if (telaConcluido) telaConcluido.classList.remove('tela-oculta');
+
+            if (boxAutenticacaoProximo) boxAutenticacaoProximo.classList.add('tela-oculta');
+            if (btnProximoEleitor) btnProximoEleitor.classList.remove('tela-oculta');
         });
     }
 
@@ -329,15 +358,54 @@ document.addEventListener('DOMContentLoaded', () => {
             votoNumero.focus();
         }
         if (votoNome) votoNome.innerText = '...';
-        if (votoFoto) votoFoto.style.display = 'none'; 
+        if (votoFoto) {
+            votoFoto.src = '';
+            votoFoto.classList.add('tela-oculta');
+        }
     }
 
+    // ==========================================================================
+    // VALIDAÇÃO DE SENHA PARA PRÓXIMO ELEITOR
+    // ==========================================================================
     if (btnProximoEleitor) {
         btnProximoEleitor.addEventListener('click', (e) => {
             e.preventDefault();
-            limparCamposVoto();
-            if (telaConcluido) telaConcluido.style.display = 'none';
-            if (telaVotacao) telaVotacao.style.display = 'block';
+            if (boxAutenticacaoProximo) {
+                boxAutenticacaoProximo.classList.remove('tela-oculta');
+                if (btnProximoEleitor) btnProximoEleitor.classList.add('tela-oculta');
+                if (senhaConfirmacaoProximo) {
+                    senhaConfirmacaoProximo.value = '';
+                    senhaConfirmacaoProximo.focus();
+                }
+            }
+        });
+    }
+
+    if (btnCancelarProximo) {
+        btnCancelarProximo.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (boxAutenticacaoProximo) boxAutenticacaoProximo.classList.add('tela-oculta');
+            if (btnProximoEleitor) btnProximoEleitor.classList.remove('tela-oculta');
+        });
+    }
+
+    if (btnValidarProximo) {
+        btnValidarProximo.addEventListener('click', (e) => {
+            e.preventDefault();
+            const senhaDigitada = senhaConfirmacaoProximo ? senhaConfirmacaoProximo.value.trim() : '';
+
+            if (senhaDigitada === senhaEncerramento) {
+                if (boxAutenticacaoProximo) boxAutenticacaoProximo.classList.add('tela-oculta');
+                limparCamposVoto();
+                if (telaConcluido) telaConcluido.classList.add('tela-oculta');
+                if (telaVotacao) telaVotacao.classList.remove('tela-oculta');
+            } else {
+                alert("Senha incorreta! Apenas o mesário pode liberar o próximo voto.");
+                if (senhaConfirmacaoProximo) {
+                    senhaConfirmacaoProximo.value = '';
+                    senhaConfirmacaoProximo.focus();
+                }
+            }
         });
     }
 
@@ -348,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEncerrar.addEventListener('click', (e) => {
             e.preventDefault();
             if (boxAutenticacaoEncerrar) {
-                boxAutenticacaoEncerrar.style.display = 'block';
+                boxAutenticacaoEncerrar.classList.remove('tela-oculta');
                 if (senhaConfirmacao) {
                     senhaConfirmacao.value = '';
                     senhaConfirmacao.focus();
@@ -360,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCancelarEncerramento) {
         btnCancelarEncerramento.addEventListener('click', (e) => {
             e.preventDefault();
-            if (boxAutenticacaoEncerrar) boxAutenticacaoEncerrar.style.display = 'none';
+            if (boxAutenticacaoEncerrar) boxAutenticacaoEncerrar.classList.add('tela-oculta');
         });
     }
 
@@ -370,10 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const senhaDigitada = senhaConfirmacao ? senhaConfirmacao.value.trim() : '';
 
             if (senhaDigitada === senhaEncerramento) {
-                if (boxAutenticacaoEncerrar) boxAutenticacaoEncerrar.style.display = 'none';
-                if (telaVotacao) telaVotacao.style.display = 'none';
-                if (telaConcluido) telaConcluido.style.display = 'none';
-                if (telaResultado) telaResultado.style.display = 'block';
+                if (boxAutenticacaoEncerrar) boxAutenticacaoEncerrar.classList.add('tela-oculta');
+                if (telaVotacao) telaVotacao.classList.add('tela-oculta');
+                if (telaConcluido) telaConcluido.classList.add('tela-oculta');
+                if (telaResultado) telaResultado.classList.remove('tela-oculta');
 
                 gerarRelatorioFinal();
             } else {
@@ -387,19 +455,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================================================
-    // ETAPA 3: APURAÇÃO E RELATÓRIO
+    // ETAPA 3: APURAÇÃO E RELATÓRIO COM DESTAQUES VISUAIS (FOTOS E NOME)
     // ==========================================================================
     function gerarRelatorioFinal() {
         if (!corpoRanking) return;
         corpoRanking.innerHTML = ''; 
 
-        if (alertaSegundoTurno) alertaSegundoTurno.style.display = 'none';
+        if (alertaSegundoTurno) alertaSegundoTurno.classList.add('tela-oculta');
+        if (cardVencedorDestaque) cardVencedorDestaque.classList.add('tela-oculta');
+        if (containerClassificadosSegundoTurno) containerClassificadosSegundoTurno.innerHTML = '';
 
         const listaCandidatos = Object.keys(candidatos).map(num => ({
             numero: num,
             nome: candidatos[num].nome,
-            votos: votosCandidatos[num] || 0,
-            ordemFoto: candidatos[num].ordemFoto
+            foto: candidatos[num].foto,
+            votos: votosCandidatos[num] || 0
         })).sort((a, b) => b.votos - a.votos);
 
         const totalVotosValidos = totalGeralVotos - (votosBrancos + votosNulos);
@@ -412,11 +482,50 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (turnoSelecionado === 1 && listaCandidatos.length >= 2 && !temVencedorPrimeiroTurno) {
-            if (alertaSegundoTurno) alertaSegundoTurno.style.display = 'block';
-            candidatosSegundoTurno = [listaCandidatos[0], listaCandidatos[1]];
+        const eDefinido = (turnoSelecionado === 2 && listaCandidatos.length > 0 && listaCandidatos[0].votos > 0) || (turnoSelecionado === 1 && temVencedorPrimeiroTurno);
+
+        // 1. CASO HAJA CAMPEÃO/ELEITO
+        if (eDefinido) {
+            const vencedor = listaCandidatos[0];
+            if (cardVencedorDestaque && nomeVencedorDestaque && fotoVencedorDestaque) {
+                nomeVencedorDestaque.innerText = vencedor.nome;
+                fotoVencedorDestaque.src = vencedor.foto;
+                cardVencedorDestaque.classList.remove('tela-oculta');
+            }
+        } 
+        // 2. CASO VÁ PARA O SEGUNDO TURNO (LADO A LADO SEM NÚMERO)
+        else if (turnoSelecionado === 1 && listaCandidatos.length >= 2) {
+            if (alertaSegundoTurno) alertaSegundoTurno.classList.remove('tela-oculta');
+
+            let candidatosClassificados = [];
+            
+            if (listaCandidatos[0].votos === listaCandidatos[1].votos) {
+                const votosEmpatadosTopo = listaCandidatos[0].votos;
+                candidatosClassificados = listaCandidatos.filter(c => c.votos === votosEmpatadosTopo);
+            } else {
+                const votosSegundoLugar = listaCandidatos[1].votos;
+                candidatosClassificados = listaCandidatos.filter(c => c.votos >= votosSegundoLugar);
+            }
+
+            candidatosSegundoTurno = candidatosClassificados;
+
+            // Renderiza os cards dos classificados lado a lado (Apenas Nome e Foto)
+            if (containerClassificadosSegundoTurno) {
+                candidatosSegundoTurno.forEach(cand => {
+                    const cardItem = document.createElement('div');
+                    cardItem.className = 'item-classificado-card';
+                    cardItem.innerHTML = `
+                        <div class="nome-classificado-card">${cand.nome}</div>
+                        <div class="container-foto-classificado">
+                            <img src="${cand.foto}" alt="${cand.nome}" class="foto-destaque">
+                        </div>
+                    `;
+                    containerClassificadosSegundoTurno.appendChild(cardItem);
+                });
+            }
         }
 
+        // Tabela completa de posições
         listaCandidatos.forEach((cand, index) => {
             const percValidos = totalVotosValidos > 0 ? ((cand.votos / totalVotosValidos) * 100).toFixed(1) : "0.0";
             const percGeral = totalGeralVotos > 0 ? ((cand.votos / totalGeralVotos) * 100).toFixed(1) : "0.0";
@@ -424,14 +533,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
 
             const eEleito = (turnoSelecionado === 2 && index === 0 && cand.votos > 0) || (turnoSelecionado === 1 && temVencedorPrimeiroTurno && index === 0);
-            const badgeEleito = eEleito ? '<span class="badge-eleito" style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px;">Eleito</span>' : '';
+            const badgeEleito = eEleito ? '<span class="badge-eleito">Eleito</span>' : '';
 
             tr.innerHTML = `
-                <td style="padding: 10px; text-align: center;"><strong>${index + 1}º</strong></td>
-                <td style="padding: 10px; text-align: center;"><strong>${cand.numero}</strong></td>
-                <td style="padding: 10px;">${cand.nome} ${badgeEleito}</td>
-                <td style="padding: 10px; text-align: right;"><strong>${cand.votos} votos</strong></td>
-                <td style="padding: 10px; text-align: right; color: #27ae60;"><strong>${percValidos}% válidos</strong> (${percGeral}% total)</td>
+                <td class="col-posicao"><strong>${index + 1}º</strong></td>
+                <td class="col-numero"><strong>${cand.numero}</strong></td>
+                <td class="col-nome">${cand.nome} ${badgeEleito}</td>
+                <td class="col-votos"><strong>${cand.votos} votos</strong></td>
+                <td class="col-porcentagem"><strong>${percValidos}% válidos</strong> (${percGeral}% total)</td>
             `;
             corpoRanking.appendChild(tr);
         });
@@ -459,15 +568,16 @@ document.addEventListener('DOMContentLoaded', () => {
             candidatosSegundoTurno.forEach(cand => {
                 candidatos[cand.numero] = {
                     nome: cand.nome,
-                    ordemFoto: cand.ordemFoto
+                    foto: cand.foto
                 };
                 votosCandidatos[cand.numero] = 0;
             });
 
-            if (telaResultado) telaResultado.style.display = 'none';
-            if (telaVotacao) telaVotacao.style.display = 'block';
+            if (telaResultado) telaResultado.classList.add('tela-oculta');
+            if (telaVotacao) telaVotacao.classList.remove('tela-oculta');
 
-            alert(`2º Turno Iniciado!\nDisputa entre: ${candidatosSegundoTurno[0].nome} (${candidatosSegundoTurno[0].numero}) vs ${candidatosSegundoTurno[1].nome} (${candidatosSegundoTurno[1].numero})`);
+            const nomesAlerta = candidatosSegundoTurno.map(c => `${c.nome} (${c.numero})`).join(', ');
+            alert(`2º Turno Iniciado!\nDisputa entre os ${candidatosSegundoTurno.length} candidatos classificados:\n${nomesAlerta}`);
 
             limparCamposVoto();
         });
